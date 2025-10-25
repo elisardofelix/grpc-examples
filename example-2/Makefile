@@ -2,8 +2,11 @@
 .PHONY: run-serve run-grpcurl
 
 # Command to run the Go gRPC server
-run-serve:
+run-server:
 	go run cmd/server/main.go
+
+run-client:
+	go run cmd/client/main.go
 
 # Example grpcurl command to call the gRPC server
 # Explanation of the flags used:
