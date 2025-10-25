@@ -7,6 +7,7 @@ import (
 	"github.com/elisardofelix/grpc-examples/example-2/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 func main() {
@@ -21,8 +22,12 @@ func main() {
 
 	client := proto.NewHelloServiceClient(conn)
 
-	resp, err := client.SayHello(ctx, &proto.SayHelloRequest{Name: "World"})
+	resp, err := client.SayHello(ctx, &proto.SayHelloRequest{Name: ""})
 	if err != nil {
+		if status, ok := status.FromError(err); ok {
+			log.Fatalf("gRPC Error - Code: %v, Message: %v", status.Code(), status.Message())
+		}
+
 		log.Fatalf("could not greet: %v", err)
 	}
 

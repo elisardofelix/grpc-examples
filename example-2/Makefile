@@ -8,6 +8,9 @@ run-server:
 run-client:
 	go run cmd/client/main.go
 
+run-client-error:
+	go run cmd/client-error/main.go
+
 # Example grpcurl command to call the gRPC server
 # Explanation of the flags used:
 #grpcurl -d '{"name":"World"}'-> body of the request in JSON format
