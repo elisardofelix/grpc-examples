@@ -24,3 +24,5 @@ if [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
   echo "export PATH=\$PATH:\$HOME/go/bin" >> ~/.bashrc
   export PATH=$PATH:$HOME/go/bin
 fi
+
+go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
