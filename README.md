@@ -5,16 +5,31 @@ A small collection of minimal gRPC examples written in Go. Each example is self-
 ## Example projects
 
 - [example-1](example-1/README.md) — Minimal gRPC "Hello" example in Go (quick start, proto included).
-- example-2 — A slightly more structured example with a server, internal package and generated grpc files.
+- [example-2](example-2/README.md) — Structured example with server, clients, internal package and Makefile targets.
+- [example-2-todo](example-2-todo/README.md) — Small Todo gRPC example demonstrating proto generation via `go generate`, server and client.
 
 Repository tree (top-level view):
 
 ```
 ./
-├── example-1/      # minimal gRPC Hello (Go)
+├── example-1/           # minimal gRPC Hello (Go)
 │   ├── main.go
 │   └── proto/
-├── example-2/      # structured example (server, internal, proto)
+├── example-2/           # structured example (server, client, internal, proto)
+│   ├── cmd/
+│   │   ├── server/
+│   │   ├── client/
+│   │   └── client-error/
+│   ├── internal/
+│   │   └── hello/
+│   └── proto/
+├── example-2-todo/      # todo example (proto, server, client, internal)
+│   ├── cmd/
+│   │   ├── server/
+│   │   └── client/
+|   ├── internal/
+│   │   └── todo/
+│   └── proto/
 └── install_dependencies.sh
 ```
 
