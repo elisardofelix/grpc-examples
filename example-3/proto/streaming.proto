@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package streaming;
+
+option go_package = "github.com/cshep4/grpc-course/module3/proto";
+
+import "google/protobuf/timestamp.proto";
+
+service StreamingService {
+  // StreamServerTime is an example of a server-streaming RPC.
+  // It will stream the current server time back to the client at specified intervals.
+  rpc StreamServerTime(StreamServerTimeRequest) returns (stream StreamServerTimeResponse);
+}
+
+// StreamServerTimeRequest specifies the interval between time updates
+message StreamServerTimeRequest {
+  int32 interval_seconds = 1;
+}
+
+// StreamServerTimeResponse returns the current server time
+message StreamServerTimeResponse {
+  google.protobuf.Timestamp current_time = 1;
+}
