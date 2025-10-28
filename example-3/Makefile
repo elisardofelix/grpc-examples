@@ -9,3 +9,6 @@ run-server:
 
 run-server-stream-client:
 	go run cmd/server-stream-client/main.go
+
+run-client-stream-client:
+	go run cmd/client-stream-client/main.go

@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	StreamingService_StreamServerTime_FullMethodName = "/streaming.StreamingService/StreamServerTime"
+	StreamingService_LogStream_FullMethodName        = "/streaming.StreamingService/LogStream"
 )
 
 // StreamingServiceClient is the client API for StreamingService service.
@@ -29,6 +30,9 @@ type StreamingServiceClient interface {
 	// StreamServerTime is an example of a server-streaming RPC.
 	// It will stream the current server time back to the client at specified intervals.
 	StreamServerTime(ctx context.Context, in *StreamServerTimeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamServerTimeResponse], error)
+	// LogStream is an example of a client-streaming RPC.
+	// It allows a client to stream log entries to a server.
+	LogStream(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[LogStreamRequest, LogStreamResponse], error)
 }
 
 type streamingServiceClient struct {
@@ -58,6 +62,19 @@ func (c *streamingServiceClient) StreamServerTime(ctx context.Context, in *Strea
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type StreamingService_StreamServerTimeClient = grpc.ServerStreamingClient[StreamServerTimeResponse]
 
+func (c *streamingServiceClient) LogStream(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[LogStreamRequest, LogStreamResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &StreamingService_ServiceDesc.Streams[1], StreamingService_LogStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[LogStreamRequest, LogStreamResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type StreamingService_LogStreamClient = grpc.ClientStreamingClient[LogStreamRequest, LogStreamResponse]
+
 // StreamingServiceServer is the server API for StreamingService service.
 // All implementations must embed UnimplementedStreamingServiceServer
 // for forward compatibility.
@@ -65,6 +82,9 @@ type StreamingServiceServer interface {
 	// StreamServerTime is an example of a server-streaming RPC.
 	// It will stream the current server time back to the client at specified intervals.
 	StreamServerTime(*StreamServerTimeRequest, grpc.ServerStreamingServer[StreamServerTimeResponse]) error
+	// LogStream is an example of a client-streaming RPC.
+	// It allows a client to stream log entries to a server.
+	LogStream(grpc.ClientStreamingServer[LogStreamRequest, LogStreamResponse]) error
 	mustEmbedUnimplementedStreamingServiceServer()
 }
 
@@ -77,6 +97,9 @@ type UnimplementedStreamingServiceServer struct{}
 
 func (UnimplementedStreamingServiceServer) StreamServerTime(*StreamServerTimeRequest, grpc.ServerStreamingServer[StreamServerTimeResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method StreamServerTime not implemented")
+}
+func (UnimplementedStreamingServiceServer) LogStream(grpc.ClientStreamingServer[LogStreamRequest, LogStreamResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method LogStream not implemented")
 }
 func (UnimplementedStreamingServiceServer) mustEmbedUnimplementedStreamingServiceServer() {}
 func (UnimplementedStreamingServiceServer) testEmbeddedByValue()                          {}
@@ -110,6 +133,13 @@ func _StreamingService_StreamServerTime_Handler(srv interface{}, stream grpc.Ser
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type StreamingService_StreamServerTimeServer = grpc.ServerStreamingServer[StreamServerTimeResponse]
 
+func _StreamingService_LogStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(StreamingServiceServer).LogStream(&grpc.GenericServerStream[LogStreamRequest, LogStreamResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type StreamingService_LogStreamServer = grpc.ClientStreamingServer[LogStreamRequest, LogStreamResponse]
+
 // StreamingService_ServiceDesc is the grpc.ServiceDesc for StreamingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -122,6 +152,11 @@ var StreamingService_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "StreamServerTime",
 			Handler:       _StreamingService_StreamServerTime_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "LogStream",
+			Handler:       _StreamingService_LogStream_Handler,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "proto/streaming.proto",
