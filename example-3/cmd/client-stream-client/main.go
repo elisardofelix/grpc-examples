@@ -38,7 +38,7 @@ func main() {
 		req := &proto.LogStreamRequest{
 			Timestamp: timestamppb.New(time.Now()),
 			Level:     proto.LogLevel_LOG_LEVEL_INFO,
-			Message:   fmt.Sprintf("Hello log: %s", i),
+			Message:   fmt.Sprintf("Hello log: %d", i),
 		}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
