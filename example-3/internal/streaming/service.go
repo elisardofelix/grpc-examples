@@ -66,3 +66,29 @@ func (s Service) LogStream(stream proto.StreamingService_LogStreamServer) error 
 		count++
 	}
 }
+
+func (s Service) Echo(stream proto.StreamingService_EchoServer) error {
+	for {
+		// loop through the messages received from the client
+		req, err := stream.Recv()
+		if err != nil {
+			// check if the stream is closed
+			if err == io.EOF {
+				// close the server side stream
+				return nil
+			}
+
+			return err
+		}
+
+		log.Printf("message received: %s", req.GetMessage())
+
+		// build our response and send back from server
+		res := &proto.EchoResponse{
+			Message: req.GetMessage(),
+		}
+		if err := stream.Send(res); err != nil {
+			return err
+		}
+	}
+}

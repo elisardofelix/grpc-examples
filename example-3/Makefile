@@ -12,3 +12,6 @@ run-server-stream-client:
 
 run-client-stream-client:
 	go run cmd/client-stream-client/main.go
+
+run-bi-directional-stream-client:
+	go run cmd/bi-directional-stream-client/main.go

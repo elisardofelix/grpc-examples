@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	StreamingService_StreamServerTime_FullMethodName = "/streaming.StreamingService/StreamServerTime"
 	StreamingService_LogStream_FullMethodName        = "/streaming.StreamingService/LogStream"
+	StreamingService_Echo_FullMethodName             = "/streaming.StreamingService/Echo"
 )
 
 // StreamingServiceClient is the client API for StreamingService service.
@@ -33,6 +34,10 @@ type StreamingServiceClient interface {
 	// LogStream is an example of a client-streaming RPC.
 	// It allows a client to stream log entries to a server.
 	LogStream(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[LogStreamRequest, LogStreamResponse], error)
+	// Echo is an example of a bidirectional-streaming RPC.
+	// Where the client can send a stream of messages, which the server will echo back
+	// the received messages in a stream.
+	Echo(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[EchoRequest, EchoResponse], error)
 }
 
 type streamingServiceClient struct {
@@ -75,6 +80,19 @@ func (c *streamingServiceClient) LogStream(ctx context.Context, opts ...grpc.Cal
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type StreamingService_LogStreamClient = grpc.ClientStreamingClient[LogStreamRequest, LogStreamResponse]
 
+func (c *streamingServiceClient) Echo(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[EchoRequest, EchoResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &StreamingService_ServiceDesc.Streams[2], StreamingService_Echo_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[EchoRequest, EchoResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type StreamingService_EchoClient = grpc.BidiStreamingClient[EchoRequest, EchoResponse]
+
 // StreamingServiceServer is the server API for StreamingService service.
 // All implementations must embed UnimplementedStreamingServiceServer
 // for forward compatibility.
@@ -85,6 +103,10 @@ type StreamingServiceServer interface {
 	// LogStream is an example of a client-streaming RPC.
 	// It allows a client to stream log entries to a server.
 	LogStream(grpc.ClientStreamingServer[LogStreamRequest, LogStreamResponse]) error
+	// Echo is an example of a bidirectional-streaming RPC.
+	// Where the client can send a stream of messages, which the server will echo back
+	// the received messages in a stream.
+	Echo(grpc.BidiStreamingServer[EchoRequest, EchoResponse]) error
 	mustEmbedUnimplementedStreamingServiceServer()
 }
 
@@ -100,6 +122,9 @@ func (UnimplementedStreamingServiceServer) StreamServerTime(*StreamServerTimeReq
 }
 func (UnimplementedStreamingServiceServer) LogStream(grpc.ClientStreamingServer[LogStreamRequest, LogStreamResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method LogStream not implemented")
+}
+func (UnimplementedStreamingServiceServer) Echo(grpc.BidiStreamingServer[EchoRequest, EchoResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method Echo not implemented")
 }
 func (UnimplementedStreamingServiceServer) mustEmbedUnimplementedStreamingServiceServer() {}
 func (UnimplementedStreamingServiceServer) testEmbeddedByValue()                          {}
@@ -140,6 +165,13 @@ func _StreamingService_LogStream_Handler(srv interface{}, stream grpc.ServerStre
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type StreamingService_LogStreamServer = grpc.ClientStreamingServer[LogStreamRequest, LogStreamResponse]
 
+func _StreamingService_Echo_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(StreamingServiceServer).Echo(&grpc.GenericServerStream[EchoRequest, EchoResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type StreamingService_EchoServer = grpc.BidiStreamingServer[EchoRequest, EchoResponse]
+
 // StreamingService_ServiceDesc is the grpc.ServiceDesc for StreamingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -156,6 +188,12 @@ var StreamingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "LogStream",
 			Handler:       _StreamingService_LogStream_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "Echo",
+			Handler:       _StreamingService_Echo_Handler,
+			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},

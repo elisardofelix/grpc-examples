@@ -14,6 +14,11 @@ service StreamingService {
   // LogStream is an example of a client-streaming RPC.
   // It allows a client to stream log entries to a server.
   rpc LogStream(stream LogStreamRequest) returns (LogStreamResponse);
+
+  // Echo is an example of a bidirectional-streaming RPC.
+  // Where the client can send a stream of messages, which the server will echo back
+  // the received messages in a stream.
+  rpc Echo(stream EchoRequest) returns (stream EchoResponse);
 }
 
 // StreamServerTimeRequest specifies the interval between time updates
@@ -45,4 +50,14 @@ enum LogLevel {
   LOG_LEVEL_WARNING = 3;
   LOG_LEVEL_ERROR = 4;
   LOG_LEVEL_FATAL = 5;
+}
+
+// EchoRequest contains the message that will be echoed back from the server.
+message EchoRequest {
+  string message = 1;
+}
+
+// EchoResponse contains the message that is being echoed back to the client.
+message EchoResponse {
+  string message = 1;
 }
