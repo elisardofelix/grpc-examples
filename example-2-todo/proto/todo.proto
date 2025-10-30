@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package todo;
 
-option go_package="github.com/cshep4/grpc-course/02-todo-service/proto";
+option go_package="github.com/elisardofelix/grpc-examples/example-2-todo/proto";
 
 service TodoService {
     rpc AddTask(AddTaskRequest) returns (AddTaskResponse);
