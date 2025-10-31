@@ -1,20 +1,50 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 
 	"github.com/elisardofelix/grpc-examples/example-4-streamfile-tls-mtls/proto"
 )
 
 func main() {
-	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	// Load the client's certificate and private key
+	clientCert, err := tls.LoadX509KeyPair("certs/client.crt", "certs/client.key")
+	if err != nil {
+		log.Fatalf("failed to load client certificate and key: %v", err)
+	}
+
+	// Load the CA's certificate to verify the server
+	caCert, err := os.ReadFile("certs/ca.crt")
+	if err != nil {
+		log.Fatalf("failed to load CA certificate: %v", err)
+	}
+
+	// append the CA's certificate to the cert pool
+	caCertPool := x509.NewCertPool()
+	if !caCertPool.AppendCertsFromPEM(caCert) {
+		log.Fatalf("failed to append CA certificate to pool")
+	}
+
+	// Create the TLS config for the client
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{clientCert},
+		RootCAs:      caCertPool,
+	}
+
+	creds := credentials.NewTLS(tlsConfig)
+
+	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

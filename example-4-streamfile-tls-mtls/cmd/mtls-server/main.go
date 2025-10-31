@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -11,6 +13,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/elisardofelix/grpc-examples/example-4-streamfile-tls-mtls/internal/stream"
 	"github.com/elisardofelix/grpc-examples/example-4-streamfile-tls-mtls/proto"
@@ -32,7 +35,32 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	grpcServer := grpc.NewServer()
+	// load the server's certificate and private key
+	serverCert, err := tls.LoadX509KeyPair("certs/server.crt", "certs/server.key")
+	if err != nil {
+		return fmt.Errorf("failed to load tls credentials: %w", err)
+	}
+
+	// load the CA's certificate to verify clients
+	caCert, err := os.ReadFile("certs/ca.crt")
+	if err != nil {
+		return fmt.Errorf("failed to load CA certificate: %w", err)
+	}
+
+	// append the CA's certificate to the cert pool
+	caCertPool := x509.NewCertPool()
+	if !caCertPool.AppendCertsFromPEM(caCert) {
+		return errors.New("failed to append CA certificate to pool")
+	}
+
+	// create the TLS config to require client authentication
+	tlsCredentials := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientCAs:    caCertPool,
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+	})
+
+	grpcServer := grpc.NewServer(grpc.Creds(tlsCredentials))
 	streamingService := stream.Service{}
 
 	proto.RegisterFileUploadServiceServer(grpcServer, streamingService)

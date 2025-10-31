@@ -10,6 +10,12 @@ run-server:
 run-client:
 	go run cmd/client/main.go
 
+run-mtls-server:
+	go run cmd/mtls-server/main.go
+
+run-mtls-client:
+	go run cmd/mtls-client/main.go
+
 .PHONY: gen-certs
 gen-certs: gen-ca-certs gen-server-certs gen-client-certs
 
