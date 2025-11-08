@@ -4,6 +4,7 @@ proto-gen:
 tidy:
 	go mod tidy
 
+# Commands to run the main server for all clients except the interceptor example
 run-server:
 	JWT_SECRET=super-secret-key-123 go run cmd/server/main.go
 

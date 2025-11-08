@@ -10,6 +10,7 @@ A small collection of minimal gRPC examples written in Go. Each example is self-
 - [example-3](example-3/README.md) — Streaming RPC patterns (server, server-stream, client-stream, bidi-stream clients).
 - [example-3-streamfile](example-3-streamfile/README.md) — File streaming example: client/server that stream files (client serves an HTTP check on port 8080).
 - [example-4-streamfile-tls-mtls](example-4-streamfile-tls-mtls/README.md) — File streaming with TLS and mTLS, certificate generation helpers and examples.
+- [example-5-interceptor](example-5-interceptor/README.md) — Interceptor and middleware demos (deadline, auth/JWT, metadata, validation, interceptor wiring).
 
 Repository tree (top-level view):
 
@@ -58,6 +59,19 @@ Repository tree (top-level view):
 │   ├── internal/
 │   │   └── stream/
 │   ├── certs/
+│   └── proto/
+├── example-5-interceptor/   # interceptor and middleware demos (deadline, auth, metadata, validation)
+│   ├── cmd/
+│   │   ├── server/
+│   │   ├── deadline-client/
+│   │   ├── auth-client/
+│   │   ├── meta-data-client/
+│   │   ├── validate-client/
+│   │   ├── interceptor-server/
+│   │   └── interceptor-client/
+│   ├── internal/
+│   │   ├── auth/
+│   │   └── interceptor/
 │   └── proto/
 └── install_dependencies.sh
 ```

@@ -36,7 +36,9 @@ func main() {
 	},
 		grpc.Header(&respHeaders),
 		grpc.Trailer(&respTrailers),
+		//define receive message size limits on bytes
 		grpc.MaxCallRecvMsgSize(14),
+		//define send message size limits on bytes
 		grpc.MaxCallSendMsgSize(10),
 	)
 	if err != nil {
