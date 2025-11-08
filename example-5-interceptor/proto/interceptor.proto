@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package interceptor;
+
+option go_package = "github.com/cshep4/grpc-course/module5/proto";
+
+import "google/protobuf/empty.proto";
+
+service InterceptorService {
+  rpc SayHello(SayHelloRequest) returns (SayHelloResponse);
+  rpc LongRunning(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Protected(google.protobuf.Empty) returns (ProtectedResponse);
+  rpc Validate(google.protobuf.Empty) returns (ValidateResponse);
+}
+
+message SayHelloRequest {
+  string name = 1;
+}
+
+message SayHelloResponse {
+  string message = 1;
+}
+
+message ProtectedResponse {
+  string user_id = 1;
+}
+
+message ValidateResponse {
+    map<string, string> claims = 1;
+}
