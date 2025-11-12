@@ -55,10 +55,10 @@ JWT_SECRET=super-secret-key-123 make run-server
 make run-d-client
 
 # run the auth client with a valid secret (succeeds)
-JWT_SECRET=super-secret-key-123 make run-auth-client-works
+make run-auth-client-works
 
 # run the auth client with an invalid secret (fails)
-JWT_SECRET=wrong-secret-key-456 make run-auth-client-fails
+make run-auth-client-fails
 
 # run the metadata demo client
 make run-meta-client
