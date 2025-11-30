@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package config;
+
+option go_package = "github.com/elisardofelix/grpc-examples/example-6-ha/proto";
+
+import "google/protobuf/empty.proto";
+
+service ConfigService {
+  rpc GetServerAddress(google.protobuf.Empty) returns (GetServerAddressResponse);
+  rpc LongRunning(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Flaky(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message GetServerAddressResponse {
+      string address = 1;
+}
+  

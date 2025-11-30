@@ -8,7 +8,7 @@ tidy:
 run-server:
 	JWT_SECRET=super-secret-key-123 go run cmd/server/main.go
 
-run-d-client:
+run-dead-client:
 	go run cmd/deadline-client/main.go
 
 run-auth-client-works:
@@ -26,6 +26,5 @@ run-validate-client:
 # Commands to run the interceptor example
 run-interceptor-server:
 	go run cmd/interceptor-server/main.go
-
 run-interceptor-client:
 	go run cmd/interceptor-client/main.go
