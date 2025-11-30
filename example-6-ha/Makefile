@@ -14,7 +14,7 @@ run-servers:
 run-custom-client:
 	go run cmd/custom-load-balancer-client/main.go
 
-.PHONY: run-retry-client
+.PHONY: run-retry-clientee
 run-retry-client:
 	go run cmd/retry-client/main.go
 
